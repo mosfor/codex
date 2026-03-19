@@ -430,6 +430,9 @@ pub struct Config {
     /// Directory where Codex stores the SQLite state DB.
     pub sqlite_home: PathBuf,
 
+    /// Directory where Codex stores memory artifacts such as `MEMORY.md`.
+    pub memory_home: PathBuf,
+
     /// Directory where Codex writes log files (defaults to `$CODEX_HOME/log`).
     pub log_dir: PathBuf,
 
@@ -1349,6 +1352,10 @@ pub struct ConfigToml {
     /// Defaults to `$CODEX_SQLITE_HOME` when set. Otherwise uses `$CODEX_HOME`.
     pub sqlite_home: Option<AbsolutePathBuf>,
 
+    /// Directory where Codex stores memory artifacts such as `MEMORY.md`.
+    /// Defaults to `$CODEX_HOME/memories`.
+    pub memory_home: Option<AbsolutePathBuf>,
+
     /// Directory where Codex writes log files, for example `codex-tui.log`.
     /// Defaults to `$CODEX_HOME/log`.
     pub log_dir: Option<AbsolutePathBuf>,
@@ -2234,7 +2241,12 @@ impl Config {
             Some(WindowsSandboxModeToml::Unelevated) => WindowsSandboxLevel::RestrictedToken,
             None => WindowsSandboxLevel::from_features(&features),
         };
-        let memories_root = memory_root(&codex_home);
+        let memory_home = cfg
+            .memory_home
+            .as_ref()
+            .map(AbsolutePathBuf::to_path_buf)
+            .unwrap_or_else(|| memory_root(&codex_home));
+        let memories_root = memory_home.clone();
         std::fs::create_dir_all(&memories_root)?;
         let memories_root = AbsolutePathBuf::from_absolute_path(&memories_root)?;
         if !additional_writable_roots
@@ -2712,6 +2724,7 @@ impl Config {
             agent_job_max_runtime_seconds,
             codex_home,
             sqlite_home,
+            memory_home,
             log_dir,
             config_layer_stack,
             history,

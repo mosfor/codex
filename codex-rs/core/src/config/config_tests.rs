@@ -1318,11 +1318,29 @@ fn sqlite_home_defaults_to_codex_home_for_workspace_write() -> std::io::Result<(
 }
 
 #[test]
+fn memory_home_defaults_to_codex_home_memories_for_workspace_write() -> std::io::Result<()> {
+    let codex_home = TempDir::new()?;
+    let config = Config::load_from_base_config_with_overrides(
+        ConfigToml::default(),
+        ConfigOverrides {
+            sandbox_mode: Some(SandboxMode::WorkspaceWrite),
+            ..Default::default()
+        },
+        codex_home.path().to_path_buf(),
+    )?;
+
+    assert_eq!(config.memory_home, codex_home.path().join("memories"));
+
+    Ok(())
+}
+
+#[test]
 fn workspace_write_always_includes_memories_root_once() -> std::io::Result<()> {
     let codex_home = TempDir::new()?;
-    let memories_root = codex_home.path().join("memories");
+    let memories_root = codex_home.path().join("project-memory");
     let config = Config::load_from_base_config_with_overrides(
         ConfigToml {
+            memory_home: Some(AbsolutePathBuf::from_absolute_path(&memories_root)?),
             sandbox_workspace_write: Some(SandboxWorkspaceWrite {
                 writable_roots: vec![AbsolutePathBuf::from_absolute_path(&memories_root)?],
                 ..Default::default()
@@ -4289,6 +4307,7 @@ fn test_precedence_fixture_with_o3_profile() -> std::io::Result<()> {
             agent_job_max_runtime_seconds: DEFAULT_AGENT_JOB_MAX_RUNTIME_SECONDS,
             codex_home: fixture.codex_home(),
             sqlite_home: fixture.codex_home(),
+            memory_home: fixture.codex_home().join("memories"),
             log_dir: fixture.codex_home().join("log"),
             config_layer_stack: Default::default(),
             startup_warnings: Vec::new(),
@@ -4430,6 +4449,7 @@ fn test_precedence_fixture_with_gpt3_profile() -> std::io::Result<()> {
         agent_job_max_runtime_seconds: DEFAULT_AGENT_JOB_MAX_RUNTIME_SECONDS,
         codex_home: fixture.codex_home(),
         sqlite_home: fixture.codex_home(),
+        memory_home: fixture.codex_home().join("memories"),
         log_dir: fixture.codex_home().join("log"),
         config_layer_stack: Default::default(),
         startup_warnings: Vec::new(),
@@ -4569,6 +4589,7 @@ fn test_precedence_fixture_with_zdr_profile() -> std::io::Result<()> {
         agent_job_max_runtime_seconds: DEFAULT_AGENT_JOB_MAX_RUNTIME_SECONDS,
         codex_home: fixture.codex_home(),
         sqlite_home: fixture.codex_home(),
+        memory_home: fixture.codex_home().join("memories"),
         log_dir: fixture.codex_home().join("log"),
         config_layer_stack: Default::default(),
         startup_warnings: Vec::new(),
@@ -4694,6 +4715,7 @@ fn test_precedence_fixture_with_gpt5_profile() -> std::io::Result<()> {
         agent_job_max_runtime_seconds: DEFAULT_AGENT_JOB_MAX_RUNTIME_SECONDS,
         codex_home: fixture.codex_home(),
         sqlite_home: fixture.codex_home(),
+        memory_home: fixture.codex_home().join("memories"),
         log_dir: fixture.codex_home().join("log"),
         config_layer_stack: Default::default(),
         startup_warnings: Vec::new(),

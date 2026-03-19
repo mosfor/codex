@@ -2226,6 +2226,14 @@
       ],
       "description": "Memories subsystem settings."
     },
+    "memory_home": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/AbsolutePathBuf"
+        }
+      ],
+      "description": "Directory where Codex stores memory artifacts such as `MEMORY.md`. Defaults to `$CODEX_HOME/memories`."
+    },
     "model": {
       "description": "Optional override of model selection.",
       "type": "string"

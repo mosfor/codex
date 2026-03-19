@@ -3446,7 +3446,7 @@ impl Session {
         if turn_context.features.enabled(Feature::MemoryTool)
             && turn_context.config.memories.use_memories
             && let Some(memory_prompt) =
-                build_memory_tool_developer_instructions(&turn_context.config.codex_home).await
+                build_memory_tool_developer_instructions(&turn_context.config.memory_home).await
         {
             developer_sections.push(memory_prompt);
         }
@@ -4876,7 +4876,7 @@ mod handlers {
             errors.push("state db unavailable; memory rows were not cleared".to_string());
         }
 
-        let memory_root = crate::memories::memory_root(&config.codex_home);
+        let memory_root = config.memory_home.clone();
         if let Err(err) = crate::memories::clear_memory_root_contents(&memory_root).await {
             errors.push(format!(
                 "failed clearing memory directory {}: {err}",

@@ -36,6 +36,21 @@ Codex stores the SQLite-backed state DB under `sqlite_home` (config key) or the
 `CODEX_SQLITE_HOME` environment variable. When unset, WorkspaceWrite sandbox
 sessions default to a temp directory; other modes default to `CODEX_HOME`.
 
+## Memory Artifacts
+
+Codex stores file-based memory artifacts such as `MEMORY.md`,
+`memory_summary.md`, and `rollout_summaries/` under `memory_home` (config key).
+When unset, it defaults to `CODEX_HOME/memories`.
+
+This is useful when you want per-project memory isolation without moving the
+rest of `CODEX_HOME`. For example, a trusted project can set
+`.codex/config.toml` to:
+
+```toml
+sqlite_home = ".codex/state"
+memory_home = ".codex/memory"
+```
+
 ## Custom CA Certificates
 
 Codex can trust a custom root CA bundle for outbound HTTPS and secure websocket
