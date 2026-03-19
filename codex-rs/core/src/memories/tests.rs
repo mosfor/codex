@@ -468,6 +468,9 @@ mod phase2 {
             let mut config = test_config();
             config.codex_home = codex_home.path().to_path_buf();
             config.cwd = config.codex_home.clone();
+            config.sqlite_home = config.codex_home.clone();
+            config.memory_home = config.codex_home.join("memories");
+            config.log_dir = config.codex_home.join("log");
             let config = Arc::new(config);
 
             let state_db = codex_state::StateRuntime::init(
